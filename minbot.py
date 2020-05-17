@@ -77,7 +77,13 @@ async def timer(ctx, time):
 async def bts(ctx):
 	gif = await search_gifs('bts')
 	await ctx.send(gif)
-
+	
+# blackpink giphy thing
+@client.command(aliases=['bp, blackpink'])
+async def bp(ctx):
+	gif = await search_gifs('blackpink')
+	await ctx.send(gif)
+	
 async def search_gifs(query):
 	try:
 		response = api_instance.gifs_random_get(GIPHY_TOKEN, tag=query)
