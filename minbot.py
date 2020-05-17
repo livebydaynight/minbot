@@ -1,0 +1,89 @@
+# bot.py
+import os
+
+import discord
+import random
+import asyncio
+import giphy_client
+
+from discord.ext import commands
+from dotenv import load_dotenv
+from giphy_client.rest import ApiException
+
+# setup
+load_dotenv()
+DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
+GIPHY_TOKEN = os.getenv('GIPHY_TOKEN')
+
+client = commands.Bot(command_prefix = '!')
+api_instance = giphy_client.DefaultApi()
+
+@client.event
+async def on_ready():
+	print(f'{client.user} has connected to Discord!')
+	
+# list of active commands
+@client.command()
+async def commands(ctx):
+	commands = 'ping', '8ball', 'timer'
+	await ctx.send(f'List of available commands: {commands}')
+
+# ping pong ping pong
+@client.command()
+async def ping(ctx):
+	await ctx.send(f'pong! {round(client.latency*1000)} ms')
+	
+# 8ball 
+@client.command(aliases=['8ball'])
+async def _8ball(ctx, *, question):
+	responses = [
+	'It is certain',
+	'It is decidedly so',
+	'Without a doubt',
+	'Yes - definitely',
+	'You may rely on it',
+	'As I see it, yes',
+	'Most likely',
+	'Outlook good',
+	'Signs point to yes',
+	'Reply hazy',
+	'try again',
+	'Ask again later',
+	'Better not tell you now',
+	'Cannot predict now',
+	'Concentrate and ask again',
+	'Dont count on it',
+	'My reply is no',
+	'My sources say no',
+	'Outlook not so good',
+	'Very doubtful',
+	]
+	
+	await ctx.send(f'{random.choice(responses)}')
+	
+# timer in minutes (time input is in seconds for asyncio)
+@client.command()
+async def timer(ctx, time):
+	if time.isdigit() :
+		await ctx.send(f'Setting a timer for {time} minute(s)')
+		await asyncio.sleep(int(time)*60)
+		await ctx.send(f'Times up! {time} minute(s) has passed')
+		
+	else :
+		await ctx.send(f'Not a valid value')
+
+# bts giphy thing
+@client.command(aliases=['BTS'])
+async def bts(ctx):
+	gif = await search_gifs('bts')
+	await ctx.send(gif)
+
+async def search_gifs(query):
+	try:
+		response = api_instance.gifs_random_get(GIPHY_TOKEN, tag=query)
+		return response.data.url
+	
+	except ApiException as e:
+		return "Exception when calling DefaultApi->gifs_random_get: %s\n" % e
+	
+client.run(DISCORD_TOKEN)
