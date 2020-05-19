@@ -18,6 +18,7 @@ DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 GIPHY_TOKEN = os.getenv('GIPHY_TOKEN')
 MONGO_URL = os.getenv('MONGO_URL')
 
+# connections and usage
 client = commands.Bot(command_prefix = '!')
 api_instance = giphy_client.DefaultApi()
 cluster = MongoClient(MONGO_URL)
@@ -101,15 +102,19 @@ async def search_gifs(query):
 # testing mongo db usage with channel messages
 @client.event
 async def on_message(ctx):
+	await client.process_commands(ctx)
+	if(ctx.)
 	print(f'{ctx.channel}: {ctx.author}: {ctx.author.name}: {ctx.content}')
 	query = {"_id": ctx.author.id}
 	
+	# new entry with score attribute
 	if collection.count_documents(query) == 0:
 		if "python" in str(ctx.content.lower()):
 			post = {"_id": ctx.author.id, "score": 1}
 			collection.insert_one(post)
 			await ctx.channel.send('accepted!')
 
+	# increment score attribute
 	else:
 		if "python" in str(ctx.content.lower()):
 			user = collection.find(query)
@@ -118,5 +123,15 @@ async def on_message(ctx):
 			score = score + 1
 			collection.update_one({"_id": ctx.author.id}, {"$set": {"score":score}})
 			await ctx.channel.send('accepted!')		
-			
+	
+@client.command
+async def checkScore(ctx):
+		print(f'checking score for {ctx.author.name}')
+		query = {"_id": ctx.author.id}
+
+		if collection.count_documents(query):
+			get = {"_id": ctx.author.id}
+			score = collections.find(get)
+			await ctx.send(score['score'])
+		
 client.run(DISCORD_TOKEN)
