@@ -5,18 +5,24 @@ import discord
 import random
 import asyncio
 import giphy_client
+import pymongo
 
 from discord.ext import commands
 from dotenv import load_dotenv
 from giphy_client.rest import ApiException
+from pymongo import MongoClient
 
 # setup
 load_dotenv()
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 GIPHY_TOKEN = os.getenv('GIPHY_TOKEN')
+MONGO_URL = os.getenv('MONGO_URL')
 
 client = commands.Bot(command_prefix = '!')
 api_instance = giphy_client.DefaultApi()
+cluster = MongoClient(MONGO_URL)
+db = cluster["minDB"]
+collection = db["UserData"]
 
 @client.event
 async def on_ready():
@@ -91,5 +97,26 @@ async def search_gifs(query):
 	
 	except ApiException as e:
 		return "Exception when calling DefaultApi->gifs_random_get: %s\n" % e
+
+# testing mongo db usage with channel messages
+@client.event
+async def on_message(ctx):
+	print(f'{ctx.channel}: {ctx.author}: {ctx.author.name}: {ctx.content}')
+	query = {"_id": ctx.author.id}
 	
+	if collection.count_documents(query) == 0:
+		if "python" in str(ctx.content.lower()):
+			post = {"_id": ctx.author.id, "score": 1}
+			collection.insert_one(post)
+			await ctx.channel.send('accepted!')
+
+	else:
+		if "python" in str(ctx.content.lower()):
+			user = collection.find(query)
+			for result in user:
+				score = result["score"]
+			score = score + 1
+			collection.update_one({"_id": ctx.author.id}, {"$set": {"score":score}})
+			await ctx.channel.send('accepted!')		
+			
 client.run(DISCORD_TOKEN)
