@@ -103,7 +103,6 @@ async def search_gifs(query):
 @client.event
 async def on_message(ctx):
 	await client.process_commands(ctx)
-	if(ctx.)
 	print(f'{ctx.channel}: {ctx.author}: {ctx.author.name}: {ctx.content}')
 	query = {"_id": ctx.author.id}
 	
