@@ -10,7 +10,7 @@ In order to install the requirements for Minbot, you will first need to install 
 
 You will also need to create a .env file and include your own `discord_token` and `giphy_token` (if you want to run giphy commands).
 
-More info about your `discord_token` can be found on the [discord developer portal](https://discord.com/developers/docs/topics/oauth2#bots)
+More info about your `discord_token` can be found on the [discord developer portal](https://discord.com/developers/docs/topics/oauth2#bots).
 
 ## Available commands
 
