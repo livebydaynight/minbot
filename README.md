@@ -29,3 +29,7 @@ Set a timer in minutes
 ### `!bts`
 
 Returns a random bts gif 🎉
+
+## TODO
+
+fix some issues with score management in discord channels
