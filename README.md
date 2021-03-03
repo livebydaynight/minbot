@@ -1,6 +1,6 @@
 # minbot
 
-a simple bot for my discord
+a simple bot for discord
 
 ## Usage
 
